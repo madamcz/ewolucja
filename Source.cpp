@@ -6,9 +6,16 @@
 
 int main()
 {
-	Ewolucja ewo(10, 4, 4);
-	ewo.ewoluuj();
-	ewo.Wypisz();
+	Ewolucja ewo(300, 50, 10);
+	for( int i = 0; i < 1000; i++)
+	{
+		ewo.ewoluuj();
+		if(! (i % 20) )
+			ewo.pokazNajlepszego();
+	}
+	//ewo.Wypisz();
+	cout << endl << "Tadam! Oto wynik: " << endl;
+	ewo.pokazNajlepszego();
 
 	system("PAUSE");
 	return 0;

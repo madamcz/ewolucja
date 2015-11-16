@@ -16,7 +16,7 @@ Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
 	{
 		PopulacjaP.push_back(osobnik(wymiar));
 	}
-
+	funkcjaPrzystosowania(&PopulacjaP);
 }
 
 void Ewolucja::ewoluuj()
@@ -24,6 +24,8 @@ void Ewolucja::ewoluuj()
 	reprodukcja();
 	krzyzowanie();
 	mutacja();
+	funkcjaPrzystosowania(&PopulacjaT);
+	selekcja();
 }
 
 void Ewolucja::Wypisz()
@@ -50,19 +52,24 @@ void Ewolucja::Wypisz()
 	}
 }
 
-void Ewolucja::funkcjaPrzystosowania(vector<osobnik> osVec)
+void Ewolucja::funkcjaPrzystosowania(vector<osobnik>* osVec)
 {
-	vector<osobnik>::iterator it = osVec.begin();
+	vector<osobnik>::iterator it = osVec->begin();
 
-	for(; it < osVec.end(); ++it)
+	for(; it < osVec->end(); ++it)
 	{
-		float suma = 0.0, iloczyn = 0.0;
+		//iloczyn inicjalizowany na 1, bo x * 1 = x, a x * 0 = 0 
+		//we wzorze na iloczyn i+1, bo w zadaniu we wzorze jest dla i =1..n
+		//a tu numerowane od 0, przez co wychodzi³o dzielenie przez 0 i nieokreslony wynik
+		float suma = 0.0, iloczyn = 1.0;
 		for(int i = 0; i < (*it).punkty.size(); i++)
 		{
 			suma += (*it).punkty[i] * (*it).punkty[i];
-			iloczyn *= std::cos((*it).punkty[i]/i);
+			//double c = (*it).punkty[i]/(i+1);
+			//iloczyn *= float(cos(c));
+			iloczyn *= static_cast<float>(std::cos((*it).punkty[i]/(i + 1)));
 		}
-		(*it).przystosowanie = (1/40) * suma + 1 - iloczyn;
+		(*it).przystosowanie = (1.0/40.0) * (suma + 1 - iloczyn);
 	}
 }
 
@@ -102,20 +109,64 @@ void Ewolucja::krzyzowanie()
 
 void Ewolucja::mutacja()
 {
+	float szansa1, szansa2;
+	vector<osobnik>::iterator os_vec = PopulacjaT.begin();
+	for( ; os_vec < PopulacjaT.end(); ++os_vec)
+	{
+		szansa1 = randomFloat(0, 1);
+		//czy mutowac osobnika ?
+		if(szansa1 <= prawd_mutacji1)
+		{
+			//dla wszystkich cech wylosuj, czy dana ceche zmienic
+			vector<float>::iterator cecha_vec = (*os_vec).punkty.begin();
+			for( ; cecha_vec < os_vec->punkty.end(); ++cecha_vec)
+			{
+				szansa2 = randomFloat(0, 1);
+				if(szansa2 <= prawd_mutacji2)
+				{
+					float zmiana = randomFloat(mutacja_lowerb, mutacja_upperb);
+					(*cecha_vec) += zmiana;
+				}//if szansa2
+
+			}//for kazda cecha
+
+		}//if szansa1
+
+	}//for kazdy osobnik
 
 }
 
-float standardDeviation(vector<float> v)
+void Ewolucja::selekcja()
 {
-	double sum = std::accumulate(std::begin(v), std::end(v), 0.0);
-	double m =  sum / v.size();
+	//wrzuc wszystko do jednego wora
+	PopulacjaR.reserve(mi + lambda);
+	PopulacjaR.insert(PopulacjaR.begin(), PopulacjaP.begin(), PopulacjaP.end());
+	PopulacjaR.insert(PopulacjaR.begin() + mi, PopulacjaT.begin(), PopulacjaT.end());
 
-	double accum = 0.0;
-	std::for_each (std::begin(v), std::end(v), [&](const double d) {
-		accum += (d - m) * (d - m);
-	});
+	//posortuj
+	sort(PopulacjaR.begin(), PopulacjaR.end());
+	najlepszy = new osobnik(PopulacjaR[0]);
 
-	float stdev = sqrt(accum / (v.size()-1));
+	//wyczysc stare wektory
+	PopulacjaP.clear();
+	PopulacjaT.clear();
 
-	return stdev;
+	//wrzuc najlepsze do populacji P
+	PopulacjaP.reserve(mi);
+	PopulacjaP.insert(PopulacjaP.begin(), PopulacjaR.begin(), PopulacjaR.begin() + mi);
+
+	//wyczysc populacje R
+	PopulacjaR.clear();
+}
+
+void Ewolucja::pokazNajlepszego()
+{
+	cout << "Najlepszy osobnik ma wartosc przystosowania = " << najlepszy->przystosowanie << endl;
+	cout << "Wymiary: ";
+	vector<float>::iterator it = najlepszy->punkty.begin();
+	for( ; it < najlepszy->punkty.end(); ++it)
+	{
+		cout << (*it) << ", ";
+	}
+	cout << endl;
 }
