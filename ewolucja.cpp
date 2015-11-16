@@ -128,7 +128,9 @@ void Ewolucja::mutacja()
 				szansa2 = randomFloat(0, 1);
 				if(szansa2 <= prawd_mutacji2)
 				{
-					float zmiana = randomFloat(mutacja_lowerb, mutacja_upperb);
+					//float zmiana = randomFloat(mutacja_lowerb, mutacja_upperb);		//statyczne (zalezne od ustalonych wartosci)
+					float zmiana = randomFloat((-(*cecha_vec))/5, (*cecha_vec)/5);		//dynamiczne (zalezne od rzedu danej cechy)
+																						//wyglada na to ze dziala lepiej
 					(*cecha_vec) += zmiana;
 				}//if szansa2
 
