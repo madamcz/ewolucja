@@ -1,5 +1,6 @@
 #include "ewolucja.h"
 #include <iostream>
+#include <sstream>
 
 //TODO
 //pamietac o randomie przy wersji rownoleglej
@@ -13,13 +14,20 @@
 //i na tym samym zestawie przeprowadzic automatyczne testy zeby dobrac parametry
 //takie jak szanse mutacji czy wartosci o jakie mutuja sie cechy
 
+
+void start(int &m, int &l, int &w, int &i, bool &c);
+
 int main()
 {
-	Ewolucja ewo(300, 50, 100);
-	for( int i = 0; i < 10000; i++)
+	int m, l, w, i;
+	bool czesciowe = false;
+	start(m, l, w, i, czesciowe);
+
+	Ewolucja ewo(m, l, w);
+	for(; i > 0; i--)
 	{
 		ewo.ewoluuj();
-		if(! (i % 20) )
+		if(czesciowe && (! (i % 20)) )
 			ewo.pokazNajlepszego();
 	}
 	//ewo.Wypisz();
@@ -28,4 +36,38 @@ int main()
 
 	system("PAUSE");
 	return 0;
+}
+
+
+void start(int &m, int &l, int &w, int &i, bool &c)
+{
+	string in;
+	cout << "Algorytm ewolucyjny. Podaj wartosci parametrow." << endl;
+
+	cout << "mi: " << endl;
+	cin >> in;
+	istringstream iss(in);
+	iss >> m;
+
+	cout << "lambda: " << endl;
+	cin >> in;
+	istringstream iss1(in);
+	iss1 >> l;
+
+	cout << "wymiar: " << endl;
+	cin >> in;
+	istringstream iss2(in);
+	iss2 >> w;
+
+	cout << "liczba iteracji: " << endl;
+	cin >> in;
+	istringstream iss3(in);
+	iss3 >> i;
+
+	cout << "czy drukowac wyniki czesciowe? (t/n): " << endl;
+	cin >> in;
+	if(in == "t")
+		c = true;
+	else 
+		c = false;
 }
