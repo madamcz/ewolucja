@@ -18,6 +18,10 @@ Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
 	}
 	funkcjaPrzystosowania(&PopulacjaP);
 }
+Ewolucja::~Ewolucja()
+{
+	delete najlepszy;
+}
 
 void Ewolucja::ewoluuj()
 {

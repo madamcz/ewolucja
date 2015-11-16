@@ -9,10 +9,10 @@ using namespace std;
 
 const int lowerb = -40;
 const int upperb = 40;
-const float prawd_mutacji1 = 0.1;
-const float prawd_mutacji2 = 0.1;
-const float mutacja_lowerb = -1;
-const float mutacja_upperb = 1;
+const float prawd_mutacji1 = 0.3;
+const float prawd_mutacji2 = 0.3;
+const float mutacja_lowerb = -3;
+const float mutacja_upperb = 3;
 
 float randomFloat(float a, float b);
 float standardDeviation(vector<float> v);
@@ -42,13 +42,14 @@ class Ewolucja
 {
 public:
 	Ewolucja(int mi, int lambda, int wymiar);
+	~Ewolucja();
 	void ewoluuj();
 	void Wypisz();
 	void pokazNajlepszego();
-	void funkcjaPrzystosowania(vector<osobnik>* osVec);
+	
 private:
 	int mi, lambda, wymiar;
-	
+	void funkcjaPrzystosowania(vector<osobnik>* osVec);
 	void reprodukcja();
 	void krzyzowanie();
 	void mutacja();
