@@ -1,10 +1,17 @@
 #include "ewolucja.h"
 
-float randomFloat(float a, float b) {
-    float random = ((float) rand()) / (float) RAND_MAX;
-    float diff = b - a;
-    float r = random * diff;
-    return a + r;
+//float randomFloat(float a, float b) {
+//    float random = ((float) rand()) / (float) RAND_MAX;
+//    float diff = b - a;
+//    float r = random * diff;
+//    return a + r;
+//}
+
+//podobno thread safe
+float randomFloat(float min, float max) {
+	static thread_local std::mt19937 generator;
+	std::uniform_real_distribution<float> distribution(min, max);
+	return distribution(generator);
 }
 
 Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
@@ -12,9 +19,13 @@ Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
 	,lambda(lambda)
 	,wymiar(wymiar)
 {
+	PopulacjaP.reserve(mi);
+	vector<osobnik>::iterator it = PopulacjaP.begin();
+//#pragma omp parallel for
 	for(int i = 0; i < mi; i++)
 	{
-		PopulacjaP.push_back(osobnik(wymiar));
+		PopulacjaP.insert(PopulacjaP.end(), osobnik(wymiar));
+		cout << i << endl;
 	}
 	funkcjaPrzystosowania(&PopulacjaP);
 }
@@ -58,22 +69,21 @@ void Ewolucja::Wypisz()
 
 void Ewolucja::funkcjaPrzystosowania(vector<osobnik>* osVec)
 {
-	vector<osobnik>::iterator it = osVec->begin();
-
-	for(; it < osVec->end(); ++it)
+	
+#pragma omp parallel for
+	for (int i = 0; i < osVec->size(); i++)
 	{
 		//iloczyn inicjalizowany na 1, bo x * 1 = x, a x * 0 = 0 
 		//we wzorze na iloczyn i+1, bo w zadaniu we wzorze jest dla i =1..n
 		//a tu numerowane od 0, przez co wychodzi³o dzielenie przez 0 i nieokreslony wynik
 		float suma = 0.0, iloczyn = 1.0;
-		for(int i = 0; i < (*it).punkty.size(); i++)
+		for(int j = 0; j < (*osVec)[i].punkty.size(); j++)
 		{
-			suma += (*it).punkty[i] * (*it).punkty[i];
-			//double c = (*it).punkty[i]/(i+1);
-			//iloczyn *= float(cos(c));
-			iloczyn *= static_cast<float>(std::cos((*it).punkty[i]/(i + 1)));
+			suma += (*osVec)[i].punkty[j] * (*osVec)[i].punkty[j];
+			
+			iloczyn *= static_cast<float>(std::cos((*osVec)[i].punkty[j]/(j + 1)));
 		}
-		(*it).przystosowanie = (1.0/40.0) * (suma + 1 - iloczyn);
+		(*osVec)[i].przystosowanie = (1.0/40.0) * (suma + 1 - iloczyn);
 	}
 }
 
@@ -88,10 +98,11 @@ void Ewolucja::reprodukcja()
 
 void Ewolucja::krzyzowanie()
 {
-	int locus = wymiar/2;
+	//int locus = wymiar/2;
+#pragma omp parallel for
 	for(int i = 0; i < PopulacjaT.size(); i+=2)
 	{
-		//int locus = rand() % (wymiar - 1) + 1;
+		int locus = int(randomFloat(1, wymiar-1));
 
 		vector<float>::iterator it1 = PopulacjaT[i].punkty.begin();
 		vector<float>::iterator it2 = PopulacjaT[i+1].punkty.begin();
@@ -114,22 +125,23 @@ void Ewolucja::krzyzowanie()
 void Ewolucja::mutacja()
 {
 	float szansa1, szansa2;
-	vector<osobnik>::iterator os_vec = PopulacjaT.begin();
-	for( ; os_vec < PopulacjaT.end(); ++os_vec)
+#pragma omp parallel for private(szansa1, szansa2)
+	for(int i = 0 ; i < PopulacjaT.size(); i++)
 	{
-		szansa1 = randomFloat(0, 1);
+		szansa1 = randomFloat(0.0, 1.0);
 		//czy mutowac osobnika ?
 		if(szansa1 <= prawd_mutacji1)
 		{
 			//dla wszystkich cech wylosuj, czy dana ceche zmienic
-			vector<float>::iterator cecha_vec = (*os_vec).punkty.begin();
-			for( ; cecha_vec < os_vec->punkty.end(); ++cecha_vec)
+			vector<float>::iterator cecha_vec = PopulacjaT[i].punkty.begin();
+			for( ; cecha_vec < PopulacjaT[i].punkty.end(); ++cecha_vec)
 			{
-				szansa2 = randomFloat(0, 1);
+				szansa2 = randomFloat(0.0, 1.0);
 				if(szansa2 <= prawd_mutacji2)
 				{
 					//float zmiana = randomFloat(mutacja_lowerb, mutacja_upperb);		//statyczne (zalezne od ustalonych wartosci)
-					float zmiana = randomFloat((-(*cecha_vec))/5, (*cecha_vec)/5);		//dynamiczne (zalezne od rzedu danej cechy)
+					float x = abs((*cecha_vec) / 5.0);
+					float zmiana = randomFloat(-x, x);		//dynamiczne (zalezne od rzedu danej cechy)
 																						//wyglada na to ze dziala lepiej
 					(*cecha_vec) += zmiana;
 				}//if szansa2

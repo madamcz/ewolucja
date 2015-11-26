@@ -4,11 +4,15 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <omp.h>
+#include <stdlib.h>
+#include <thread>
+#include <random>
 
 using namespace std;
 
-const int lowerb = -40;
-const int upperb = 40;
+const float lowerb = -40;
+const float upperb = 40;
 const float prawd_mutacji1 = 0.3;
 const float prawd_mutacji2 = 0.3;
 const float mutacja_lowerb = -3;
