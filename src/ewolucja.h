@@ -23,15 +23,17 @@ struct osobnik
 {
 	vector<float> punkty;
 	float przystosowanie;
+	osobnik() {};
 	osobnik(int wymiar)
 	{
+		punkty.resize(wymiar);
 		for(int i = 0; i < wymiar; i++)
 		{
-			punkty.push_back(randomFloat(lowerb, upperb));
+			punkty[i] = (randomFloat(lowerb, upperb));
 		}
 	}
 	//przeladowanie operatora < do sortowania
-	bool operator <(const osobnik& o)
+	bool operator< (osobnik const &o) const
 	{
 		return (this->przystosowanie < o.przystosowanie);
 	}
@@ -59,4 +61,4 @@ private:
 };
 
 
-#endif //EWOLUCJA_H
+#endif

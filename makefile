@@ -1,16 +1,13 @@
 CXX      = g++
-<<<<<<< HEAD
 CXXFLAGS = -g -Wall -std=gnu++11
-=======
-CPPFLAGS = -g -Wall -std=gnu++11
->>>>>>> seq_alt
 OMP      = -fopenmp
 SHELL    = /bin/sh
 DEBUG    = -O0
 PROFILE  = -pq
+SRC_DIR  = str
 
-SOURCES  = $(shell echo *.cpp)
-HEADERS  = $(shell echo *.h)
+SOURCES  = $(shell echo $(SRC_DIR)/*.cpp)
+HEADERS  = $(shell echo $(SRC_DIR)/*.h)
 OBJECTS  = $(SOURCES:.cpp=.o)
 TARGET   = ewolucja
 
