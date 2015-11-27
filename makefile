@@ -4,7 +4,7 @@ OMP      = -fopenmp
 SHELL    = /bin/sh
 DEBUG    = -O0
 PROFILE  = -pq
-SRC_DIR  = str
+SRC_DIR  = src
 
 SOURCES  = $(shell echo $(SRC_DIR)/*.cpp)
 HEADERS  = $(shell echo $(SRC_DIR)/*.h)
