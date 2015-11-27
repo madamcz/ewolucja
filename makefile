@@ -1,5 +1,9 @@
 CXX      = g++
+<<<<<<< HEAD
 CXXFLAGS = -g -Wall -std=gnu++11
+=======
+CPPFLAGS = -g -Wall -std=gnu++11
+>>>>>>> seq_alt
 OMP      = -fopenmp
 SHELL    = /bin/sh
 DEBUG    = -O0
