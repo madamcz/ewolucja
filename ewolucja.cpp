@@ -1,4 +1,5 @@
 #include "ewolucja.h"
+#include <cmath>
 
 float randomFloat(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;
