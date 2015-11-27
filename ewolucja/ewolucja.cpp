@@ -17,15 +17,14 @@ float randomFloat(float min, float max) {
 Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
 	:mi(mi)
 	,lambda(lambda)
-	,wymiar(wymiar)
+	,wymiar(wymiar) 
 {
-	PopulacjaP.reserve(mi);
-	vector<osobnik>::iterator it = PopulacjaP.begin();
-//#pragma omp parallel for
+	PopulacjaP.resize(mi);
+
+#pragma omp parallel for
 	for(int i = 0; i < mi; i++)
 	{
-		PopulacjaP.insert(PopulacjaP.end(), osobnik(wymiar));
-		cout << i << endl;
+		PopulacjaP[i] = osobnik(wymiar);
 	}
 	funkcjaPrzystosowania(&PopulacjaP);
 }
@@ -89,10 +88,12 @@ void Ewolucja::funkcjaPrzystosowania(vector<osobnik>* osVec)
 
 void Ewolucja::reprodukcja()
 {
+	PopulacjaT.resize(lambda);
+#pragma omp parallel for
 	for(int i = 0; i < lambda; i++)
 	{
-		int ran = rand() % mi;
-		PopulacjaT.push_back(PopulacjaP[ran]);
+		int ran = randomFloat(0, mi);
+		PopulacjaT[i] = PopulacjaP[ran];
 	}
 }
 

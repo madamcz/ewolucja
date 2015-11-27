@@ -3,7 +3,6 @@
 #include <sstream>
 
 //TODO
-//pamietac o randomie przy wersji rownoleglej
 //zrobic mutacje zalezna od najlepszego osobnika??
 //chodzi o to, ze mutacja powyzej 1 wplywa na szybsze zbieganie w poczatkowych fazach
 //ale gdy wymiary sa juz blisko zera, tak duza zmiana pogarsza wynik (niewazne czy + czy -)
@@ -17,17 +16,46 @@
 
 void start(int &m, int &l, int &w, int &i, bool &c);
 
-int main()
+int main(int argc, char* argv[])
 {
-	int m, l, w, i;
+	int m, l, w, iter = 0;
 	bool czesciowe = false;
-	start(m, l, w, i, czesciowe);
+	//start(m, l, w, iter, czesciowe);			//zapytaj o parametry
+	if (argc < 9)
+	{
+		cout << "not enough parameters" << endl << "usage: -m <mi> -l <lambda> -w <dimensions> -i <iterations>";
+		cout << endl;
+		system("PAUSE");
+		exit(1);
+	}
+
+	//rozpoznaj podane parametry
+	for (int i = 1; i < (argc - 1);i++)
+	{
+		if (string(argv[i]) == "-m")
+		{
+			m = atoi(argv[i + 1]);
+		}
+		if (string(argv[i]) == "-l")
+		{
+			l = atoi(argv[i + 1]);
+		}
+		if (string(argv[i]) == "-w")
+		{
+			w = atoi(argv[i + 1]);
+		}
+		if (string(argv[i]) == "-i")
+		{
+			iter = atoi(argv[i + 1]);
+		}
+	}//for argv
+	cout << "m: " << m << " l: " << l << " w: " << w << " i: " << iter << endl;
 
 	Ewolucja ewo(m, l, w);
-	for(; i > 0; i--)
+	for(; iter > 0; iter--)
 	{
 		ewo.ewoluuj();
-		if(czesciowe && (! (i % 20)) )
+		if(czesciowe && (! (iter % 20)) )
 			ewo.pokazNajlepszego();
 	}
 	//ewo.Wypisz();

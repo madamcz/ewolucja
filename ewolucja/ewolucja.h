@@ -34,6 +34,7 @@ struct osobnik
 			punkty.push_back(randomFloat(lowerb, upperb));
 		}
 	}
+	osobnik() {}
 	//przeladowanie operatora < do sortowania
 	bool operator <(const osobnik& o)
 	{
