@@ -17,7 +17,6 @@ const float mutacja_upperb = 3;
 float randomFloat(float a, float b);
 float standardDeviation(vector<float> v);
 
-
 //struktura osobnika, ktory ma cechy (wymiary) i wartosc przystosowania
 struct osobnik
 {
@@ -51,7 +50,7 @@ public:
 	
 private:
 	int mi, lambda, wymiar;
-	void funkcjaPrzystosowania(vector<osobnik>* osVec);
+	void funkcjaPrzystosowania(vector<osobnik>& osVec);
 	void reprodukcja();
 	void krzyzowanie();
 	void mutacja();

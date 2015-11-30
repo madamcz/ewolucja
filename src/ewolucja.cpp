@@ -17,7 +17,7 @@ Ewolucja::Ewolucja(int mi, int lambda, int wymiar)
 	{
 		PopulacjaP.push_back(osobnik(wymiar));
 	}
-	funkcjaPrzystosowania(&PopulacjaP);
+	funkcjaPrzystosowania(PopulacjaP);
 }
 Ewolucja::~Ewolucja()
 {
@@ -29,7 +29,7 @@ void Ewolucja::ewoluuj()
 	reprodukcja();
 	krzyzowanie();
 	mutacja();
-	funkcjaPrzystosowania(&PopulacjaT);
+	funkcjaPrzystosowania(PopulacjaT);
 	selekcja();
 }
 
@@ -37,7 +37,7 @@ void Ewolucja::Wypisz()
 {
 	for(int i = 0; i < PopulacjaP.size(); i++)
 	{
-		cout << "Osobnik " << i << " puntky: ";
+		cout << "Osobnik " << i << " punkty: ";
 		for(int j = 0; j < PopulacjaP[i].punkty.size(); j++)
 		{
 			cout << PopulacjaP[i].punkty[j] << ", ";
@@ -48,7 +48,7 @@ void Ewolucja::Wypisz()
 	cout << "populacja potomkow" << endl;
 	for(int i = 0; i < PopulacjaT.size(); i++)
 	{
-		cout << "Osobnik " << i << " puntky: ";
+		cout << "Osobnik " << i << " punkty: ";
 		for(int j = 0; j < PopulacjaT[i].punkty.size(); j++)
 		{
 			cout << PopulacjaT[i].punkty[j] << ", ";
@@ -57,11 +57,9 @@ void Ewolucja::Wypisz()
 	}
 }
 
-void Ewolucja::funkcjaPrzystosowania(vector<osobnik>* osVec)
+void Ewolucja::funkcjaPrzystosowania(vector<osobnik>& osVec)
 {
-	vector<osobnik>::iterator it = osVec->begin();
-
-	for(; it < osVec->end(); ++it)
+	for(auto it = osVec.begin(); it < osVec.end(); ++it)
 	{
 		//iloczyn inicjalizowany na 1, bo x * 1 = x, a x * 0 = 0 
 		//we wzorze na iloczyn i+1, bo w zadaniu we wzorze jest dla i =1..n

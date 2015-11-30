@@ -11,13 +11,13 @@ HEADERS  = $(shell echo $(SRC_DIR)/*.h)
 OBJECTS  = $(SOURCES:.cpp=.o)
 TARGET   = ewolucja
 
-.PHONY: clean cleanest rebuild all
+.PHONY: clean cleanest rebuild all omp
 
-profile: CPPFLAGS += $(PROFILE)
-profile: rebuild
+profile: CXXFLAGS += $(PROFILE)
+profile: $(TARGET)
 
-omp: CPPFLAGS += $(OMP)
-omp: rebuild
+omp: CXXFLAGS += $(OMP)
+omp: $(TARGET)
 
 all: $(TARGET)
 

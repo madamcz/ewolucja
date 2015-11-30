@@ -1,6 +1,8 @@
 #include "ewolucja.h"
 #include <iostream>
 #include <sstream>
+#include <omp.h>
+#include <limits>
 
 //TODO
 //pamietac o randomie przy wersji rownoleglej
@@ -16,28 +18,37 @@
 
 
 void start(int &m, int &l, int &w, int &i, bool &c);
+int convArgv(char* argv);
+void wait();
 
-int main()
+int main(int argc, char **argv)
 {
-	int m, l, w, i;
 	bool czesciowe = false;
-	start(m, l, w, i, czesciowe);
+	if (argc < 4) {
+		std::cout << "\nNieprawidłowa liczba argumentów!" << std::endl;
+		return 1;
+	}
+	int mi = convArgv(argv[1]);
+	int lambda = convArgv(argv[2]);
+	int dim = convArgv(argv[3]);
+	int i = convArgv(argv[4]); 
 
-	Ewolucja ewo(m, l, w);
+	double time_run, time_start = omp_get_wtime();
+	Ewolucja ewo(mi, lambda, dim);
 	for(; i > 0; i--)
 	{
 		ewo.ewoluuj();
 		if(czesciowe && (! (i % 20)) )
 			ewo.pokazNajlepszego();
 	}
+	time_run = omp_get_wtime() - time_start;
 	//ewo.Wypisz();
-	cout << endl << "Tadam! Oto wynik: " << endl;
+	std::cout << "Wynik: " << std::endl;
 	ewo.pokazNajlepszego();
+	std::cout << "Czas: " << time_run << std::endl;
 
-	system("PAUSE");
-	return 0;
+	wait();
 }
-
 
 void start(int &m, int &l, int &w, int &i, bool &c)
 {
@@ -70,4 +81,20 @@ void start(int &m, int &l, int &w, int &i, bool &c)
 		c = true;
 	else 
 		c = false;
+}
+
+int convArgv(char* argv) {
+    int temp;
+    std::istringstream ss(argv);
+    if (ss >> temp) {
+        return temp;
+    } else {
+        std::cout << "\nNieprawidłowy argument" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+void wait() {
+    std::cout << std::endl << "Nacisnij ENTER aby kontynuuować..." << std::endl;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
